@@ -1,8 +1,6 @@
-"use client";
-
+"use client"
 import { CSSProperties, ReactElement, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-
 import { cn } from "@/lib/utils";
 
 interface Sparkle {
@@ -16,44 +14,10 @@ interface Sparkle {
 }
 
 interface SparklesTextProps {
-  /**
-   * @default <div />
-   * @type ReactElement
-   * @description
-   * The component to be rendered as the text
-   * */
   as?: ReactElement;
-
-  /**
-   * @default ""
-   * @type string
-   * @description
-   * The className of the text
-   */
   className?: string;
-
-  /**
-   * @required
-   * @type string
-   * @description
-   * The text to be displayed
-   * */
   text: string;
-
-  /**
-   * @default 10
-   * @type number
-   * @description
-   * The count of sparkles
-   * */
   sparklesCount?: number;
-
-  /**
-   * @default "{first: '#9E7AFF', second: '#FE8BBB'}"
-   * @type string
-   * @description
-   * The colors of the sparkles
-   * */
   colors?: {
     first: string;
     second: string;
@@ -94,7 +58,7 @@ const SparklesText: React.FC<SparklesTextProps> = ({
           } else {
             return { ...star, lifespan: star.lifespan - 0.1 };
           }
-        }),
+        })
       );
     };
 
@@ -102,7 +66,7 @@ const SparklesText: React.FC<SparklesTextProps> = ({
     const interval = setInterval(updateStars, 100);
 
     return () => clearInterval(interval);
-  }, [colors.first, colors.second]);
+  }, [colors.first, colors.second, sparklesCount]);
 
   return (
     <div

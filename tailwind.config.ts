@@ -1,10 +1,9 @@
-// tailwind.config.ts
 import { Config } from "tailwindcss";
-import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
+// import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
 
 // Utility to add CSS variables for color palette
 const addVariablesForColors = ({ addBase, theme }: { addBase: any; theme: any }) => {
-  const allColors = flattenColorPalette(theme("colors"));
+  const allColors = theme("colors");
 
   // Convert color palette to CSS variables
   const newVars: Record<string, string> = Object.fromEntries(

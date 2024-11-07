@@ -1,49 +1,61 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
+import { decodeJwt } from 'jose';
 
-const AuthRoutes = ["/login", "/register"];
-
-type Role = keyof typeof roleBasedRoutes;
-
-const roleBasedRoutes = {
-    user: [/^\/user/],
-    admin: [/^\/admin/],
+// Define role-based access routes
+const roleBasedRoutes: {
+  [key: string]: RegExp[];  // Allow any string as a key
+} = {
+  user: [/^\/user/],    // Routes for regular users
+  admin: [/^\/admin/],  // Routes for admins
 };
 
-// This function can be marked `async` if using `await` inside
-export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
+// Routes that are public and don't require authentication
+const AuthRoutes = ["/login", "/register"];
 
-    console.log(pathname);
+// Middleware to handle authentication and role-based routing
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-    // const user = {
-    //     name: "Antu",
-    //     token: "antu",
-    //     role: "user",
-    // };
-    const user = undefined;
+  // Retrieve the tokens from cookies
+  const accessToken = request.cookies.get('accessToken');
+  let user = null;
 
-    if (!user) {
-        if (AuthRoutes.includes(pathname)) {
-            return NextResponse.next();
-        } else {
-            return NextResponse.redirect(new URL("/login", request.url));
-        }
+  // Decode the accessToken to extract user info
+  if (accessToken) {
+    try {
+      // Decode the JWT without verifying
+      const payload = decodeJwt(accessToken.value);
+      user = payload as { role: string; userId: string }; // Adjust based on your JWT payload structure
+    } catch (error) {
+      console.error("Error decoding accessToken", error);
     }
+  }
 
-    if (user?.role && roleBasedRoutes[user?.role as Role]) {
-        const routes = roleBasedRoutes[user?.role as Role];
-        console.log(routes);
-
-        if (routes.some((route) => pathname.match(route))) {
-            return NextResponse.next();
-        }
+  // If no user is logged in, allow access to AuthRoutes or redirect to login
+  if (!user) {
+    if (AuthRoutes.includes(pathname)) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(new URL("/login", request.url));
     }
+  }
 
-    return NextResponse.redirect(new URL("/", request.url));
+  // Check role-based access for authenticated users
+  if (user.role && roleBasedRoutes[user.role]) {
+    const routes = roleBasedRoutes[user.role];
+
+    // Allow access if the pathname matches the user's role-based routes
+    if (routes.some((route) => pathname.match(route))) {
+      return NextResponse.next();
+    }
+  }
+
+  // If the user does not have permission, redirect to the home page
+  return NextResponse.redirect(new URL("/", request.url));
 }
 
-// See "Matching Paths" below to learn more
+// Define the paths the middleware should apply to
 export const config = {
-    matcher: ["/user", "/user/:page*", "/admin/:page*", "/login", "/register"],
+  matcher: ["/user", "/user/:page*", "/admin/:page*", "/login", "/register"],
 };

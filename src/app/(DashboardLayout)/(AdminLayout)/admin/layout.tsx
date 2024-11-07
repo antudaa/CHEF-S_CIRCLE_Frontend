@@ -1,19 +1,20 @@
-import Footer from "@/app/Component/Global/Footer";
-import Navbar from "@/app/Component/Global/Navbar";
+import Sidebar from "@/components/Global/SideBar";
 import { Providers } from "@/lib/Providers";
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+
   return (
     <html lang="en">
       <body>
         <Providers>
-          <Navbar />
-          {children}
-          <Footer />
+          <main className="flex gap-6">
+            <Sidebar />
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

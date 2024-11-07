@@ -1,5 +1,5 @@
-import Footer from "@/app/Component/Global/Footer";
-import Navbar from "@/app/Component/Global/Navbar";
+import Footer from "@/components/Global/Footer";
+import NavbarComponent from "@/components/Global/Navbar";
 import { Providers } from "@/lib/Providers";
 import type { Metadata } from "next";
 
@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          <Navbar />
+          <NavbarComponent />
           {children}
           <Footer />
         </Providers>

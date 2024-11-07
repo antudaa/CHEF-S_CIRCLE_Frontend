@@ -1,3 +1,4 @@
+"use client"
 import {
     createContext,
     Dispatch,
@@ -12,6 +13,15 @@ import { getCurrentUser } from "../services/AuthService";
 
 const UserContext = createContext<IUserProviderValues | undefined>(undefined);
 
+export interface DecodedUser {
+    _id: string; // Ensure this is not optional
+    email: string;
+    name: string;
+    profilePicture?: string;
+    role: 'user' | 'admin';
+    // Any other fields in DecodedUser
+}
+
 interface IUserProviderValues {
     user: IUser | null;
     isLoading: boolean;
@@ -25,8 +35,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 
     const handleUser = async () => {
         const user = await getCurrentUser();
-
-        setUser(user);
+    
+        // Cast user to IUser if DecodedUser is similar to IUser
+        setUser(user as IUser);
         setIsLoading(false);
     };
 
