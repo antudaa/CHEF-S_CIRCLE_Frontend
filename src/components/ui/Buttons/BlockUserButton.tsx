@@ -1,18 +1,18 @@
-import { blockUser } from "@/services/User/userService";
+import { useCurrentToken } from "@/redux/features/auth/authSlice";
+import { useBlockUserMutation } from "@/redux/features/users/userApi";
 import { TError, TUser } from "@/types";
-import { useUserStore } from "@/zustand/store/userStore";
 import { Popconfirm, message } from "antd";
+import { useSelector } from "react-redux";
 
 const BlockUserButton = ({ user }: { user: TUser }) => {
-    const { blockUser: blockUserInStore } = useUserStore();
+    const token = useSelector(useCurrentToken);
+    const [blockUserMutation] = useBlockUserMutation();
 
     const handleBlockUser = async () => {
         try {
-            const res = await blockUser(user?._id as string);
+            const res = await blockUserMutation({ id: user._id, token }).unwrap();
             if (res?.success) {
-                message.success(`${user?.name} Blocked successfully.`);
-                // Update the state
-                blockUserInStore(user?._id as string);
+                message.success(`${user?.name} blocked successfully.`);
             }
         } catch (err: unknown) {
             if (err && typeof err === 'object' && 'data' in err) {

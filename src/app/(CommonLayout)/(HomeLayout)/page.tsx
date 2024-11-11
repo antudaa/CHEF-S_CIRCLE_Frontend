@@ -1,3 +1,4 @@
+;'use client'
 import StatesSection from "@/components/Sections/AboutPage/StatesSection";
 import FeaturedRecipes from "@/components/Sections/FeaturedRecipes";
 import HeroSection from "@/components/Sections/HeroSection";
@@ -5,46 +6,78 @@ import PricingSection from "@/components/Sections/PricingSection";
 import ReviewSection from "@/components/Sections/ReviewSection";
 import SubscribeNowSection from "@/components/Sections/SubscribeNowSection";
 import { ScrollBasedVelocityDemo } from "@/components/ui/MagicUI/ScrollBasedVelocity";
+import { PlaceholdersAndVanishInput } from "@/components/ui/AceternityUI/placeholders-and-vanish-input";
+import BoxReveal from "@/components/ui/box-reveal";
+import { AnimatedTooltipPreview } from "@/components/ui/Tooltip/AnimatedTooltip";
+import { SparklesText } from "@/components/ui/MagicUI/SparklesText";
+
+const placeholders = [
+    "What's the first rule of Fight Club?",
+    "Who is Tyler Durden?",
+    "Where is Andrew Laeddis Hiding?",
+    "Write a Javascript method to reverse a string",
+    "How to assemble your own PC?",
+];
+
+
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
+};
+const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("submitted");
+};
 
 export default function Home() {
     return (
         <section className="min-h-screen text-center">
-<>
-                <section className="relative py-14 mt-44 lg:pt-44 lg:pb-24 bg-gray-100 lg:hidden">
-                    <div className="w-full max-w-7xl mx-auto px-4 lg:px-8">
-                        <div className="w-full max-w-4xl mx-auto sm:px-12 mb-10 lg:mb-20">
-                            <h1 className="font-manrope font-bold text-4xl leading-snug sm:text-5xl text-center mb-5 text-black">
-                                {`Welcome To Chef's Circle`}
-                            </h1>
-                            <p className="text-xl font-medium leading-8 text-gray-400 text-center mb-14 max-w-xl mx-auto">
-                            {`Cook, Share, Savor – Discover Delicious Recipes from Home Cooks to Culinary Pros! This highlights the community aspect, encourages sharing, and speaks to a wide range of users from home cooks to professionals. Let me know if you'd like any adjustments!`}
-                            </p>
-                            <div className="parent flex flex-col sm:flex-row items-center max-w-xl mx-auto justify-center gap-y-4 sm:justify-between pr-2 sm:pr-1 sm:bg-white rounded-full mb-5 relative group transition-all duration-500 border border-transparent hover:border-indigo-600 focus-within:border-indigo-600">
-                                <input type="email" className="block w-full px-6 py-3.5 text-base max-sm:text-center font-normal shadow-xs max-sm:bg-white text-gray-900 bg-transparent border-none rounded-full placeholder-gray-400 focus:outline-none leading-normal" placeholder="What’s your email?" />
-                                <button className="py-3 px-6 max-sm:w-full  rounded-full bg-indigo-600 text-white text-sm leading-4 font-medium whitespace-nowrap transition-all duration-300 hover:bg-indigo-700 sm:absolute top-1.5 right-3">Get Started</button>
-                            </div>
-                            <p className="text-sm font-normal text-gray-500 text-center">
-                                {/* no personal credit checks or founder guarantee. */}
-                            </p>
-                        </div>
-                        <div className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:justify-between">
-                            {/* <Image src="https://pagedone.io/asset/uploads/1709270640.png" alt="" className="object-cover"/>
-
-                                <Image src="https://pagedone.io/asset/uploads/1710391965.png" alt="" className="mx-auto w-56 object-cover"/>
-                                    <Image src="https://pagedone.io/asset/uploads/1709270672.png" alt="" className="object-cover"/> */}
-                                    </div>
+            <>
+            <div className="w-full md:hidden mt-32 mx-auto px-6">
+                                <div className="flex items-center text-sm font-medium text-gray-500 justify-center lg:justify-start">
+                                    {/* <span className="bg-indigo-600 py-1 px-3 rounded-2xl text-xs font-medium text-white mr-3 ">#1</span>
+                                Investment app */}
+                                    {/* <TextHoverEffect text="CHEF'S CIRCLE" /> */}
                                 </div>
-                            </section>
-                        </>
-                        <div className="hidden lg:block">
-                            <HeroSection />
-                        </div>
-                        <FeaturedRecipes />
-                        <ScrollBasedVelocityDemo />
-                        <SubscribeNowSection />
-                        <StatesSection />
-                        <PricingSection />
-                        <ReviewSection />
-                </section>
-                );
+                                <BoxReveal boxColor={"#6366f1"} duration={0.5}>
+                                    <h1 className="py-8 text-center text-gray-900 font-bold font-manrope text-5xl lg:text-left leading-[70px]">
+                                        Welcome To The
+                                        <span className="bg-clip-text bg-no-repeat text-transparent bg-gradient-to-r py-4 from-purple-500 via-violet-500 to-pink-500 [text-shadow:0_0_rgba(0,0,0,0.1)]"> <SparklesText text={`CHEF'S CIRCLE`} /> </span>
+                                    </h1>
+                                </BoxReveal>
+                                <BoxReveal boxColor={"#6366f1"} duration={0.5}>
+                                    <p className=" text-gray-500 text-lg text-center lg:text-left">
+                                    {`Cook, Share, Savor – Discover Delicious Recipes from Home Cooks to Culinary Pros! This highlights the community aspect, encourages sharing, and speaks to a wide range of users from home cooks to professionals. Let me know if you'd like any adjustments!`}
+                                    </p>
+                                </BoxReveal>
+                                <BoxReveal boxColor={"#6366f1"} duration={0.5}>
+                                    <div
+                                        className="my-10 rounded-full md:shadow">
+                                        <PlaceholdersAndVanishInput
+                                            placeholders={placeholders}
+                                            onChange={handleChange}
+                                            onSubmit={onSubmit}
+                                        />
+                                    </div>
+                                </BoxReveal>
+                                <div className="flex justify-start">
+                                    <AnimatedTooltipPreview  />
+                                </div>
+                                <BoxReveal boxColor={"#6366f1"} duration={0.5}>
+                                    <div className="flex items-center flex-col lg:flex-row">
+                                        <span className="mt-3 text-base text-gray-600 font-medium lg:ml-3">Meet Our Admin Team</span>
+                                    </div>
+                                </BoxReveal>
+                            </div>
+            </>
+            <div className="hidden lg:block">
+                <HeroSection />
+            </div>
+            <FeaturedRecipes />
+            <ScrollBasedVelocityDemo />
+            <SubscribeNowSection />
+            <StatesSection />
+            <PricingSection />
+            <ReviewSection />
+        </section>
+    );
 }

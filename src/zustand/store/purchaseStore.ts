@@ -27,8 +27,6 @@ export const usePremiumAccessStore = create<PremiumAccessState>((set) => ({
                 }
             );
 
-            console.log(response);
-
             if (response.status === 200 && response.data.success) {
                 set({ isSuccess: true });
                 return response.data;

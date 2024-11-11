@@ -1,5 +1,5 @@
 "use client"
-import ManageRecipeTable from '@/components/ui/Table/ManageRecipeTable';
+import UserRecipeTable from '@/components/ui/Table/UserRecipeManagementTable';
 import { useState } from 'react';
 
 const RecipeManagement = () => {
@@ -103,7 +103,7 @@ const RecipeManagement = () => {
                 </div>
             </div>
 
-            <ManageRecipeTable />
+            <UserRecipeTable />
         </section>
     );
 };

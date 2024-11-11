@@ -5,12 +5,35 @@ import {
     Modal,
     Form,
     Input,
+    message,
 } from 'antd';
+import { useUpdateUserDataMutation } from '@/redux/features/users/userApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCurrentUser, setUser, useCurrentToken, useRefreshToken } from '@/redux/features/auth/authSlice';
+import { TError } from '@/types';
+import { Button } from '../button';
+import UploadButton from '../Buttons/UploadButton';
 
 const { TextArea } = Input;
 
+type TUpload = {
+    profileImage?: {
+        file?: {
+            response?: {
+                display_url: string;
+            };
+        };
+    };
+};
+
 const UpdateProfile = () => {
+    const userData = useSelector(selectCurrentUser);
+    const accessToken = useSelector(useCurrentToken);
+    const refreshToken = useSelector(useRefreshToken);
+    const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [updateUserData] = useUpdateUserDataMutation();
+    const [profileImage, setProfileImage] = useState<string>('');
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -25,8 +48,37 @@ const UpdateProfile = () => {
     };
 
     // Form submission handler
-    const onFinish = (values: { name: string, bio: string }) => {
-        console.log('Form Submitted:', values);
+    const handleUpdateUserData = async (values: { name: string, bio: string, profileImage: TUpload }) => {
+        const id = userData?._id;
+        const updatedData = {
+            name: values?.name,
+            bio: values?.bio,
+            profileImage: values?.profileImage?.file?.response?.display_url || userData?.profileImage
+        }
+
+        try {
+            const res = await updateUserData({ id, accessToken, updatedData }).unwrap();
+            if (res.statusCode === 200) {
+                dispatch(setUser({
+                    user: res.data,
+                    accessToken: accessToken,
+                    refreshToken: refreshToken,
+                }));
+                message.success(res.message);
+                setIsModalOpen(false);
+            }
+        } catch (err: unknown) {
+            if (err && typeof err === 'object' && 'data' in err) {
+                const error = err as TError;
+                message.error(`${error?.data?.message} Check slot availability.` || 'Delete Recipe failed.');
+            } else {
+                message.error('An unknown error occurred.');
+            }
+        }
+    };
+
+    const handleFileUploaded = (url: string) => {
+        setProfileImage(url);
     };
 
     return (
@@ -44,7 +96,7 @@ const UpdateProfile = () => {
                     wrapperCol={{ span: 14 }}
                     layout="horizontal"
                     style={{ maxWidth: 600 }}
-                    onFinish={onFinish}
+                    onFinish={handleUpdateUserData}
                 >
                     <Form.Item label="Name" name="name">
                         <Input />
@@ -52,10 +104,16 @@ const UpdateProfile = () => {
                     <Form.Item label="Bio" name="bio">
                         <TextArea rows={4} />
                     </Form.Item>
+                    <Form.Item
+                        name="profileImage"
+                        initialValue={profileImage}
+                    >
+                        <UploadButton name="profileImage" onFileUploaded={handleFileUploaded} />
+                    </Form.Item>
                     <Form.Item wrapperCol={{ offset: 4, span: 14 }}>
-                        <button type="submit" className="ant-btn ant-btn-primary">
+                        <Button type="submit" className="w-full bg-blue-500">
                             Submit
-                        </button>
+                        </Button>
                     </Form.Item>
                 </Form>
             </Modal>

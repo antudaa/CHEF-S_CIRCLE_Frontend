@@ -2,27 +2,20 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import Cookies from 'js-cookie';
 import Logo from "@/Assets/logo/Cheaf's_CircleLogo_WithoutBG_1.png";
 import ShineBorder from '@/components/ui/shine-border';
 import DropdownProfile from './Dropdown';
-import { useAuthStore } from '@/zustand/store/authStore';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '@/redux/features/auth/authSlice';
 
 export default function NavbarComponent() {
     const [state, setState] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
-    const { userData, setUserData } = useAuthStore();
+    const userData = useSelector(selectCurrentUser);
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
-
-    useEffect(() => {
-        const userDataFromCookie = Cookies.get('userData');
-        if (userDataFromCookie) {
-            setUserData(JSON.parse(userDataFromCookie));
-        }
-    }, [setUserData]);
 
     if (!isMounted) return null;
 
@@ -34,7 +27,7 @@ export default function NavbarComponent() {
     ];
 
     return (
-        <nav className="bg-white max-w-7xl mx-auto md:rounded-full fixed top-0 md:top-5 left-0 right-0 shadow-md z-50 ">
+        <nav className="bg-white max-w-7xl mx-auto md:rounded-full fixed top-0 md:top-5 left-0 right-0 shadow-md z-50">
             <ShineBorder
                 borderRadius={50}
                 color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
@@ -51,7 +44,7 @@ export default function NavbarComponent() {
                         </Link>
                         <div className="md:hidden z-50">
                             <button
-                                className="text-gray-500 hover:text-gray-800"
+                                className="text-gray-500 hover:text-gray-800 -ml-16"
                                 onClick={() => setState(!state)}
                             >
                                 {state ? (
@@ -86,7 +79,7 @@ export default function NavbarComponent() {
                                         </li>
                                         <li>
                                             <Link href="/register" className="block py-3 px-4 font-medium text-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none rounded-lg shadow md:inline text-sm">
-                                                Sign in
+                                                Sign Up
                                             </Link>
                                         </li>
                                     </>

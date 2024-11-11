@@ -1,18 +1,18 @@
-// UnBlockUserButton.tsx
-import { unblockUser } from "@/services/User/userService";
+import { useCurrentToken } from "@/redux/features/auth/authSlice";
+import { useUnBlockUserMutation } from "@/redux/features/users/userApi";
 import { TError, TUser } from "@/types";
-import { useUserStore } from "@/zustand/store/userStore";
 import { Popconfirm, message } from "antd";
+import { useSelector } from "react-redux";
 
 const UnBlockUserButton = ({ user }: { user: TUser }) => {
-    const { unblockUser: unblockUserInStore } = useUserStore();
+    const token = useSelector(useCurrentToken);
+    const [unBlockUserMutation] = useUnBlockUserMutation();
 
     const handleUnblockUser = async () => {
         try {
-            const res = await unblockUser(user?._id as string);
+            const res = await unBlockUserMutation({ id: user._id, token }).unwrap();
             if (res?.success) {
-                message.success(`${user?.name} Unblocked successfully.`);
-                unblockUserInStore(user?._id as string);
+                message.success(`${user?.name} UnBlocked successfully.`);
             }
         } catch (err: unknown) {
             if (err && typeof err === 'object' && 'data' in err) {

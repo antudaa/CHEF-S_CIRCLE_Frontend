@@ -14,7 +14,7 @@ import { getCurrentUser } from "../services/AuthService";
 const UserContext = createContext<IUserProviderValues | undefined>(undefined);
 
 export interface DecodedUser {
-    _id: string; // Ensure this is not optional
+    _id?: string; // Ensure this is not optional
     email: string;
     name: string;
     profilePicture?: string;

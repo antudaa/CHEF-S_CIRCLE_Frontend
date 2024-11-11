@@ -7,7 +7,6 @@ import SaladeImage from "@/Assets/Images/SaladeImage_2.jpg";
 import PizzaImage from "@/Assets/Images/PizzaImage_1.jpg";
 import PestryImage from "@/Assets/Images/PestryImage_1.jpg";
 import { PlaceholdersAndVanishInput } from "../ui/AceternityUI/placeholders-and-vanish-input";
-// import { TextHoverEffect } from "../ui/AceternityUI/text-hover-effect";
 import { BackgroundBeamsWithCollision } from "../ui/AceternityUI/background-beams-with-collision";
 import { BoxReveal } from "../ui/MagicUI/BoxReveal";
 import { SparklesText } from "../ui/MagicUI/SparklesText";

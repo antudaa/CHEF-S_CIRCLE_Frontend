@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function PlaceholdersAndVanishInput({
-  placeholders,
   onChange,
   onSubmit,
 }: {
@@ -12,16 +11,15 @@ export function PlaceholdersAndVanishInput({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }) {
-  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  console.log(currentPlaceholder);
+  // const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startAnimation = useCallback(() => {
     intervalRef.current = setInterval(() => {
-      setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
+      // setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
     }, 3000);
-  }, [placeholders.length]);
+  }, []);
 
   const handleVisibilityChange = useCallback(() => {
     if (document.visibilityState !== "visible" && intervalRef.current) {

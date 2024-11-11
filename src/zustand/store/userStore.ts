@@ -26,14 +26,6 @@ export const useUserStore = create<UserState>((set) => ({
                 user._id === id ? { ...user, status: 'blocked' } : user
             ),
         })),
-    // updateUser: (user: TUser) => {
-    //     console.log(user);
-
-    //     set((state) => ({
-    //         data: state.data.map((u) => (u._id === user._id ? user : u)),
-    //         userData: state.userData.map((u) => (u._id === user._id ? user : u)),
-    //     }))
-    // },
     unblockUser: (id) =>
         set((state) => ({
             userData: state.userData.map((user) =>

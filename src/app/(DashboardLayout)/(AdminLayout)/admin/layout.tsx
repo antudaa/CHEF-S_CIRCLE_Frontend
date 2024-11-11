@@ -1,5 +1,6 @@
 import Sidebar from "@/components/Global/SideBar";
 import { Providers } from "@/lib/Providers";
+// import { AdminLayoutWrapper } from "./adminLayoutWrapper";
 
 export default function RootLayout({
   children,
@@ -12,8 +13,10 @@ export default function RootLayout({
       <body>
         <Providers>
           <main className="flex gap-6">
+            {/* <AdminLayoutWrapper sidebar={<Sidebar />}> */}
             <Sidebar />
-            {children}
+              {children}
+            {/* </AdminLayoutWrapper> */}
           </main>
         </Providers>
       </body>

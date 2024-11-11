@@ -1,56 +1,79 @@
-import { loginUser, registerUser } from "@/services/AuthService"
-import { TUser } from "@/types"
-import { useAuthStore } from "@/zustand/store/authStore"
-import { useMutation } from "@tanstack/react-query"
-import { message } from "antd"
-import { useRouter } from "next/navigation"
-import { FieldValues } from "react-hook-form"
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser, useCurrentToken } from '@/redux/features/auth/authSlice';
+import { useLazyGetUserFullDetailQuery } from '@/redux/features/users/userApi';
+import { TDecodedAccessToken, TUser } from '@/types';
+import { decodeJwt } from 'jose';
 
-type TLogin = {
-    data: {
-        acccessToken: string;
-        refreshToken: string;
-        user: TUser;
-        message: string;
-        statusCode: number;
-        success: true;
-    }
+const useAuth = () => {
+    const reduxUserData = useSelector(selectCurrentUser);
+    const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [refreshToken, setRefreshToken] = useState<string | null>(null);
+    const [userData, setUserData] = useState(reduxUserData);
+
+    useEffect(() => {
+        const persistAuth = localStorage.getItem('persist:auth');
+        if (persistAuth) {
+            try {
+                const parsedAuth = JSON.parse(persistAuth);
+                const parsedUserData = parsedAuth.user ? JSON.parse(parsedAuth.user) : null;
+                setUserData(parsedUserData || reduxUserData);
+
+                setAccessToken(parsedAuth.accessToken || null);
+                setRefreshToken(parsedAuth.refreshToken || null);
+            } catch (error) {
+                console.error("Error parsing auth data:", error);
+            }
+        }
+    }, [reduxUserData]);
+
+    return { userData, accessToken, refreshToken };
 };
 
-export const useUserRegistration = () => {
+export default useAuth;
 
-    const router = useRouter();
+export const useUserData = () => {
+    const token = useSelector(useCurrentToken);
+    const [userData, setUserData] = useState<TUser | null>(null);
+    const [triggerGetUserFullDetail, { data, error, isLoading }] = useLazyGetUserFullDetailQuery();
 
-    return useMutation<TLogin, Error, FieldValues>({
-        mutationKey: ["USER_REGISTRATION"],
-        mutationFn: async (userData) => await registerUser(userData),
-        onSuccess: () => {
-            router.push('/login');
-            message.success("User Account created successful.");
-        },
-        onError: (error) => {
-            message.error(error.message)
+    // Decode the JWT token to extract user data like userId, etc.
+    let payload: TDecodedAccessToken | null = null;
+    if (token) {
+        try {
+            payload = decodeJwt<TDecodedAccessToken>(token);
+        } catch (error) {
+            console.error("Error decoding the token", error);
         }
-    })
-}
+    }
 
+    const userId = payload?.userId;
 
-export const useLoginHook = () => {
-    const router = useRouter();
-    const { setIsAuthenticated, setUserData } = useAuthStore(); // Get methods from Zustand
+    useEffect(() => {
+        // Fetch user data when userId and token are available
+        if (userId && token) {
+            const fetchUserData = async () => {
+                try {
+                    await triggerGetUserFullDetail({ id: userId, token });
+                } catch (err) {
+                    console.error("Error fetching user data:", err);
+                }
+            };
 
-    return useMutation<TLogin, Error, FieldValues>({
-        mutationKey: ["USER_LOGIN"],
-        mutationFn: async (loginData) => await loginUser(loginData),
-        onSuccess: (data) => {
-            setIsAuthenticated(true);
-            setUserData(data?.data?.user);
-            router.push('/');
-            message.success("Successfully logged in.");
-        },
-        onError: (error) => {
-            console.log(error);
-            message.error(`Something went wrong. Please check your credentials.`);
+            fetchUserData();
         }
-    });
+    }, [userId, token, triggerGetUserFullDetail]);
+
+    // Set user data when it's fetched successfully
+    useEffect(() => {
+        if (data) {
+            setUserData(data.data);
+        }
+    }, [data]);
+
+    return {
+        userData,
+        isLoading,
+        error,
+    };
 };

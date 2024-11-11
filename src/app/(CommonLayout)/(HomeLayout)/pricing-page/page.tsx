@@ -1,19 +1,26 @@
 "use client"
+import { useCurrentToken } from "@/redux/features/auth/authSlice";
+import { usePurchasePremiumAccessMutation } from "@/redux/features/payment/paymentApi";
 import { TError } from "@/types";
-import { usePremiumAccessStore } from "@/zustand/store/purchaseStore";
 import { message } from "antd";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const PricingPage = () => {
+    const token = useSelector(useCurrentToken)
     const [startDate] = useState<Date>(new Date());
     const [endDate] = useState<Date>(new Date(new Date().setMonth(new Date().getMonth() + 1)));
 
-    const { purchasePremiumAccess } = usePremiumAccessStore();
+    const [purchasePremiumAccess] = usePurchasePremiumAccessMutation();
 
     const handlePurchase = async (pricePerMonth: number) => {
         try {
-            const res = await purchasePremiumAccess(startDate, endDate, pricePerMonth);
-            console.log(res);
+            const res = await purchasePremiumAccess({
+                startDate,
+                endDate,
+                pricePerMonth,
+                token: token
+            }).unwrap();
             if (res?.success) {
                 window.location.href = res.data?.payment_url as string;
                 message.success("Purchase successful! Redirecting to payment...");

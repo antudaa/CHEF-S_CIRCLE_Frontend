@@ -1,15 +1,35 @@
 "use client";
 import React from 'react';
 import type { MenuProps } from 'antd';
-import { Dropdown, Space } from 'antd';
+import { Dropdown, message, Space } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
-import { TUser } from '@/types';
-import { useAuthStore } from '@/zustand/store/authStore'; // Import the auth store
+import { TError, TUser } from '@/types';
+import { useDispatch } from 'react-redux';
+import { logout } from '@/redux/features/auth/authSlice';
+import { useLogoutUserMutation } from '@/redux/features/auth/authApi';
+import { useRouter } from 'next/navigation';
 
-const DropdownProfile = ({ userData }: { userData: TUser }) => {
-  console.log(userData);
-  const logout = useAuthStore((state) => state.logout);
+const DropdownProfile = ({ userData }: { userData: Partial<TUser> }) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const [logoutUser] = useLogoutUserMutation();
+
+  const handleLogout = async () => {
+    try {
+        await logoutUser({}).unwrap();
+        dispatch(logout());
+        message.success("Logged out successfully");
+        router.push('/');
+    } catch (err: unknown) {
+        if (err && typeof err === 'object' && 'data' in err) {
+            const error = err as TError;
+            message.error(`${error?.data?.message}` || 'Login failed! Please try again.');
+        } else {
+            message.error('An unknown error occurred.');
+        }
+    }
+};
 
   // Define menu items including the Logout option
   const items: MenuProps['items'] = [
@@ -33,9 +53,7 @@ const DropdownProfile = ({ userData }: { userData: TUser }) => {
       key: '4',
       label: (
         <button
-          onClick={() => {
-            logout(); // Call the logout function
-          }}
+          onClick={handleLogout}
           className="w-full text-left"
         >
           Logout

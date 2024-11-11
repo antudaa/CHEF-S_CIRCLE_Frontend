@@ -4,10 +4,10 @@ import { decodeJwt } from 'jose';
 
 // Define role-based access routes
 const roleBasedRoutes: {
-  [key: string]: RegExp[];  // Allow any string as a key
+  [key: string]: RegExp[];
 } = {
-  user: [/^\/user/],    // Routes for regular users
-  admin: [/^\/admin/],  // Routes for admins
+  user: [/^\/user/],
+  admin: [/^\/admin/],
 };
 
 // Routes that are public and don't require authentication
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
     try {
       // Decode the JWT without verifying
       const payload = decodeJwt(accessToken.value);
-      user = payload as { role: string; userId: string }; // Adjust based on your JWT payload structure
+      user = payload as { role: string; userId: string };
     } catch (error) {
       console.error("Error decoding accessToken", error);
     }

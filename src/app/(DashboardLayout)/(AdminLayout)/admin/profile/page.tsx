@@ -1,37 +1,27 @@
 'use client';
-import { useAuthStore } from "@/zustand/store/authStore";
 import Image from "next/image";
-import Cookies from 'js-cookie';
-import { useEffect } from "react";
 import { MdVerified } from "react-icons/md";
-import GlobalLoading from "@/app/loading";
 import UpdateProfile from "@/components/ui/Model/UpdateProfileModel";
+import { useUserData } from "@/hook/auth.hook";
+import GlobalLoading from "@/app/loading";
 
 
 const AdminProfile = () => {
-    const { userData, setUserData } = useAuthStore();
+    const { userData, isLoading } = useUserData();
 
-    // Optional: Re-sync Zustand with cookie (only needed if there's an async update)
-    useEffect(() => {
-        const userDataFromCookie = Cookies.get('userData');
-        if (userDataFromCookie) {
-            setUserData(JSON.parse(userDataFromCookie));
-        }
-    }, [setUserData]);
-
-    if (!userData) {
-        return <GlobalLoading />;
+    if (isLoading && !userData) {
+        return <GlobalLoading />
     }
 
     return (
         <section className="max-w-7xl min-h-screen mx-auto my-10 bg-[aliceblue] rounded-xl">
             <div className="container mx-auto py-8">
                 <div className="grid grid-cols-4 sm:grid-cols-12 gap-6 px-4">
-                    <div className="col-span-4 sm:col-span-3">
+                    <div className="xl:col-span-4 sm:col-span-12">
                         <div className="bg-white shadow rounded-lg p-6">
                             <div className="flex flex-col items-start">
                                 <div>
-                                    <Image src={userData?.profileImage as string} alt="Profile Image" width={200} height={200} className="w-32 h-32 lg:w-56 lg:h-56 bg-gray-300 rounded-xl mb-4 shrink-0 shadow-xl" />
+                                    <Image src={userData?.profileImage as string} alt="Profile Image" width={200} height={200} className="w-32 h-32 lg:w-56 lg:h-56 bg-gray-300 rounded-xl mb-4 shrink-0 shadow-xl z-10" />
                                 </div>
                                 <h1 className="text-xl font-bold flex gap-4">{userData?.name}
                                     {
@@ -42,7 +32,6 @@ const AdminProfile = () => {
                                 </p>
                                 <p className="text-blue-600 bg-indigo-50 px-4 rounded-full uppercase my-2 border border-blue-600">{userData?.role}</p>
                                 <div className="mt-6 flex flex-wrap gap-4 justify-center">
-                                    {/* <a href="#" className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Follow</a> */}
                                     <UpdateProfile />
                                 </div>
                             </div>
@@ -58,7 +47,7 @@ const AdminProfile = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="col-span-4 sm:col-span-9">
+                    <div className="xl:col-span-8 sm:col-span-12">
                         <div className="bg-white shadow rounded-lg p-6">
                             <h2 className="text-xl font-bold mb-4">About Me</h2>
                             <p className="text-gray-700">

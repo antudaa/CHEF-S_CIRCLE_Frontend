@@ -9,30 +9,36 @@ import DeleteRecipeButton from '../Buttons/DeleteRecipeButton';
 import { RecipeCategory } from '@/types';
 import { RecipeDetailsModel } from '../Model/RecipeDetailsModel';
 import GlobalLoading from '@/app/loading';
-import { useFetchPublishedRecipesQuery } from '@/redux/features/recipes/recipeApi';
+import { useFetchRecipesByAuthorQuery } from '@/redux/features/recipes/recipeApi';
+import { useUserData } from '@/hook/auth.hook';
 
 const ITEMS_PER_PAGE = 5;
 
-const RecipeTable: React.FC = () => {
+const UserRecipeTable: React.FC = () => {
     const [searchKeyword, setSearchKeyword] = useState("");
     const debouncedSearchKeyword = DebounceSearch(searchKeyword, 500);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [sortOption, setSortOption] = useState("");
     const { data, setData } = useRecipeStore();
     const [currentPage, setCurrentPage] = useState(1);
+    const { userData } = useUserData();
+    const authorId = userData?._id as string;
 
     // Use the fetchPublishedRecipes query hook
-    const { data: fetchedData, isLoading, error } = useFetchPublishedRecipesQuery({
-        searchTerm: debouncedSearchKeyword,
-        sort: sortOption,
-        category: selectedCategory,
-        page: currentPage,
-        limit: ITEMS_PER_PAGE,
-    });
+    const { data: fetchedData, isLoading, error } = useFetchRecipesByAuthorQuery(
+        authorId ? {
+            authorId,
+            searchTerm: debouncedSearchKeyword,
+            sort: sortOption,
+            category: selectedCategory,
+            page: currentPage,
+            limit: ITEMS_PER_PAGE
+        } : { authorId: '', searchTerm: '', sort: '', category: '', page: 1, limit: ITEMS_PER_PAGE }
+    );
 
     useEffect(() => {
         if (fetchedData) {
-            setData(fetchedData.data.recipes); // Update Zustand store
+            setData(fetchedData.data.recipes); // Update Zustand store with fetched recipes
         }
     }, [fetchedData, setData]);
 
@@ -169,24 +175,24 @@ const RecipeTable: React.FC = () => {
                                 })}
                             </tbody>
                         </table>
-                        
+
                         <div className="flex align-center items-center my-4 justify-end">
-                                <button
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="px-4 py-2 mx-1 border rounded-md disabled:opacity-50"
-                                >
-                                    Previous
-                                </button>
-                                <span className="mx-2 text-sm">Page {currentPage}</span>
-                                <button
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={!fetchedData || fetchedData.data.recipes.length < ITEMS_PER_PAGE}
-                                    className="px-4 py-2 mx-1 border rounded-md disabled:opacity-50"
-                                >
-                                    Next
-                                </button>
-                            </div>
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="px-4 py-2 mx-1 border rounded-md disabled:opacity-50"
+                            >
+                                Previous
+                            </button>
+                            <span className="mx-2 text-sm">Page {currentPage}</span>
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={!fetchedData || fetchedData.data.recipes.length < ITEMS_PER_PAGE}
+                                className="px-4 py-2 mx-1 border rounded-md disabled:opacity-50"
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -194,4 +200,4 @@ const RecipeTable: React.FC = () => {
     );
 };
 
-export default RecipeTable;
+export default UserRecipeTable;

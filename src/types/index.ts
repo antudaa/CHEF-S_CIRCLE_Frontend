@@ -1,3 +1,12 @@
+export type TDecodedAccessToken = {
+  exp: number;
+  iat: number;
+  role: string;
+  userEmail: string;
+  userId: string;
+}
+
+
 export interface IUser {
   _id: string;
   name: string;
@@ -55,7 +64,7 @@ export interface PremiumAccessState {
 
 // Base User Interface
 export interface IBaseUser {
-  id: string; // Plain string for frontend instead of Types.ObjectId
+  id: string;
   name: string;
   email: string;
   password: string;
@@ -72,11 +81,11 @@ export type TUser = IBaseUser & {
   _id?: string;
   profileImage: string;
   isPremium: boolean;
-  followers: string[]; // Using string[] for IDs
-  following: string[]; // Using string[] for IDs
+  followers: string[];
+  following: string[];
   bio?: string;
   memberShipExpiration?: Date;
-  favouriteRecipeList: string[]; // Using string[] for recipe IDs
+  favouriteRecipeList: string[];
   socialLinks?: {
     instagram?: string;
     twitter?: string;

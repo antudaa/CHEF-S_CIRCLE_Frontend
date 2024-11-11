@@ -4,9 +4,6 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import Link from "next/link";
-import { useAuthStore } from "@/zustand/store/authStore";
-import Cookies from 'js-cookie';
-import { useEffect } from "react";
 import { IoHome } from "react-icons/io5";
 import { BiFoodMenu } from "react-icons/bi";
 import { MdManageAccounts } from "react-icons/md";
@@ -14,17 +11,37 @@ import { AiOutlineProfile } from "react-icons/ai";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoLogOutOutline } from "react-icons/io5";
 import GlobalLoading from "@/app/loading";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/features/auth/authSlice";
+import { message } from "antd";
+import { useRouter } from "next/navigation";
+import { useLogoutUserMutation } from "@/redux/features/auth/authApi";
+import { TError } from "@/types";
+import { useUserData } from "@/hook/auth.hook";
 
 const Sidebar = () => {
-    const logout = useAuthStore((state) => state.logout);
-    const { userData, setUserData } = useAuthStore();
+    const dispatch = useDispatch();
+    const router = useRouter();
 
-    useEffect(() => {
-        const userDataFromCookie = Cookies.get('userData');
-        if (userDataFromCookie) {
-            setUserData(JSON.parse(userDataFromCookie));
+    const [logoutUser] = useLogoutUserMutation();
+
+    const handleLogout = async () => {
+        try {
+            await logoutUser({}).unwrap();
+            dispatch(logout());
+            message.success("Logged out successfully");
+            router.push('/');
+        } catch (err: unknown) {
+            if (err && typeof err === 'object' && 'data' in err) {
+                const error = err as TError;
+                message.error(`${error?.data?.message}` || 'Login failed! Please try again.');
+            } else {
+                message.error('An unknown error occurred.');
+            }
         }
-    }, [setUserData]);
+    };
+    const { userData } = useUserData();
+
     const [isSidebarOpen, setSidebarOpen] = useState(false);
 
     const MenuItems = [
@@ -36,7 +53,7 @@ const Sidebar = () => {
         {
             icon: <BiFoodMenu className="size-5 text-gray-600" />,
             label: "Recipes",
-            path: "/admin/recipe-management",
+            path: userData?.role === 'user' ? '/user/recipe-management' : '/admin/recipe-management',
         },
         ...(userData?.role === "admin"
             ? [
@@ -172,9 +189,7 @@ const Sidebar = () => {
                             <li key={index}>
                                 {item.label === "Logout" ? (
                                     <button
-                                        onClick={async () => {
-                                            logout()
-                                        }}
+                                        onClick={handleLogout}
                                         className="p-3 w-full rounded-lg items-center inline-flex"
                                     >
                                         <div className="h-5 items-center gap-3 flex">
@@ -210,12 +225,9 @@ const Sidebar = () => {
                         </h3>
                     </div>
                     <div className="gap-3 inline-flex">
-                        <a href="#" className="flex rounded-full text-indigo-300 text-xs font-semibold leading-4">
-                            Dismiss
-                        </a>
-                        <a href="#" className="flex rounded-full text-indigo-700 text-xs font-semibold leading-4">
+                        <Link href={`/pricing-page`} className="flex rounded-full text-indigo-700 text-xs font-semibold leading-4">
                             Upgrade Plan
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>
